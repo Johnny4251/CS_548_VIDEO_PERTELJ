@@ -88,7 +88,7 @@ def main():
         print("Opening webcam...")
 
         # Linux/Mac (or native Windows) with direct webcam connection
-        capture = cv2.VideoCapture(1) #, cv2.CAP_DSHOW) # CAP_DSHOW recommended on Windows 
+        capture = cv2.VideoCapture(0) #, cv2.CAP_DSHOW) # CAP_DSHOW recommended on Windows 
         # WSL: Use Yawcam to stream webcam on webserver
         # https://www.yawcam.com/download.php
         # Get local IP address and replace
