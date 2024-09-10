@@ -1,3 +1,12 @@
+# Author:       John Pertell
+# Subject:      CS548 - Video Processing/Vision
+# Date:         09.09.24
+# Desc:         This program plays a video and saves each 
+#               picture as a .png file in a specified directory.
+#               This program also supports playing/saving video 
+#               frames at a desired new_fps. 
+
+
 import sys
 import os
 import cv2
