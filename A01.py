@@ -1,4 +1,6 @@
 import sys
+import os
+import shutil
 import numpy as np
 import cv2
 
@@ -76,6 +78,40 @@ def display_frames(all_frames, title, fps=30):
     # cleanup window
     cv2.destroyWindow(title)
 
+def save_frames(all_frames, output_dir, basename, fps=30):
+
+    """
+
+    This function takes a list of frames from a video, an 
+    output directory and a basename to save all frames as .png files. 
+    The image frames will be found under the 'output_dir/basename' 
+    directory. 
+    
+    The user will also be able to specify the fps if desired. 
+
+    """
+
+    # compute the folder path
+    video_folder = basename + "_" + str(fps)
+    output_path = os.path.join(output_dir, video_folder)
+
+    # if directory already exists, recursively remove & replace it!
+    if os.path.exists(output_path): shutil.rmtree(output_path)
+    os.makedirs(output_path)
+
+    # iterate through each frame
+    frame_count = len(all_frames)
+    for frame_idx in range(frame_count):
+        # get current_frame from list
+        frame = all_frames[frame_idx]
+
+        # compute image name based on it's index
+        image_name = "image_%07d.png" % frame_idx
+
+        # write the image to output_path
+        image_path = os.path.join(output_path, image_name)
+        cv2.imwrite(image_path, frame)
+
 
 def main():
     """
@@ -86,7 +122,8 @@ def main():
     """
     
     frames = load_video_as_frames("assign01/input/noice.mp4")
-    display_frames(frames, "Title", fps=20)
+    #display_frames(frames, "Title", fps=20)
+    save_framess(frames, "noice", "testing")
     
 
 if __name__ == "__main__":
