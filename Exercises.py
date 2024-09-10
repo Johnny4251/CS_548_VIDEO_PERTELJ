@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 
+
 """
 Exercises from: CS_490_548_01_VideoBasics - Dr. Michael J. Reale
 """
@@ -75,3 +76,21 @@ class VideoBasics:
         fimage = np.absolute(fimage - avg_idx) # avg_idx comes from blur_across_buffer return
 
         return fimage
+
+class CustomFun:
+    def threshold_channel(image, threshold_value, channel=None):
+        if channel is not None and len(image.shape) == 3:
+            channel_data = image[:, :, channel]
+            thresholded_channel = np.where(channel_data >= threshold_value, 255, 0).astype(np.uint8)
+            
+            thresholded_image = image.copy()
+            thresholded_image[:, :, channel] = thresholded_channel
+        else:
+            if len(image.shape) == 3:
+                gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+            else:
+                gray_image = image
+            
+            thresholded_image = np.where(gray_image >= threshold_value, 255, 0).astype(np.uint8)
+
+        return thresholded_image

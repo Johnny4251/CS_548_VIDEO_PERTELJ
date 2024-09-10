@@ -2,7 +2,7 @@ import sys
 import numpy as np
 import time
 import cv2
-from Exercises import VideoBasics
+from Exercises import VideoBasics, CustomFun
 
 def display_file(filename, looping=True):
     capture = cv2.VideoCapture(filename)
@@ -17,9 +17,7 @@ def display_file(filename, looping=True):
     key = -1
     while key == -1:
         ret, frame = capture.read()
-
         if ret == True:   
-
             cv2.imshow(windowName, frame)
 
             # in order to loop a video...
@@ -34,7 +32,6 @@ def display_file(filename, looping=True):
         else:
             print("Something bad happened...") 
             break
-
         key = cv2.waitKey(30)
 
     capture.release()
