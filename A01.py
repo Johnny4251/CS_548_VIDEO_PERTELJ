@@ -187,5 +187,4 @@ def main():
     # save all_frames into output_dir/input_core
     save_frames(all_frames, output_dir, input_core, fps=30)
 
-if __name__ == "__main__":
-    main()
+if __name__ == "__main__": main()
