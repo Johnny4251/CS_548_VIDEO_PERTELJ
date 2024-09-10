@@ -6,7 +6,6 @@
 #               This program also supports playing/saving video 
 #               frames at a desired new_fps. 
 
-
 import sys
 import os
 import cv2
@@ -39,7 +38,6 @@ def load_video_as_frames(video_filepath):
 
     # looping through all frames
     while True:
-
         # find frame
         ret, frame = capture.read()
         
@@ -50,7 +48,6 @@ def load_video_as_frames(video_filepath):
         else:
             capture.release()
             return video_frames
-
 
 def compute_wait(fps):
     """
@@ -76,7 +73,6 @@ def display_frames(all_frames, title, fps=30):
     # display each frame at the desired fps
     frame_count = len(all_frames)
     for frame_idx in range(frame_count):
-
         # get current_frame from list->show frame
         frame = all_frames[frame_idx]
         cv2.imshow(title, frame)
