@@ -112,14 +112,43 @@ def save_frames(all_frames, output_dir, basename, fps=30):
         image_path = os.path.join(output_path, image_name)
         cv2.imwrite(image_path, frame)
 
+def change_fps(input_frames, old_fps, new_fps):
+
+    """
+    
+    This function takes in an input_frame list and it's old_fps.
+    It then returns a new list of frames with the desired new_fps.
+
+    """
+
+    # get the old number of old & new_frames
+    old_frame_cnt = len(input_frames)
+    new_frame_cnt = int(new_fps*old_frame_cnt/old_fps)
+
+    # a list to store the new frames
+    output_frames = []
+
+    # compute the new_frames to the output_frames
+    # for the new_fps.
+    for i in range(new_frame_cnt):
+        frame_idx = int(old_fps*i/new_fps)
+        output_frames.append(input_frames[frame_idx])
+
+    return output_frames
 
 def main():
     
+    # new_fps < 0 => not being used
+    new_fps = -1
+
     # get argument count-> verify that the correct arguments have been passed
     argc = len(sys.argv)
     if argc < 3:
-        print("Usage: <input_video_path> <output_directory>")
+        print("Usage: <input_video_path> <output_directory> <OPTIONAL: fps>")
         exit(1)
+    
+    # optional argument #3 => fps
+    if argc > 3: new_fps = int(sys.argv[3])
 
     # get the input_video_path's core
     input_video_path = sys.argv[1]
@@ -136,10 +165,18 @@ def main():
         print("Error: Could not load video frames.") 
         exit(1)
     
-    # display frames, save_frames
+    # display frames
     display_frames(all_frames, "Input Video", fps=30)
-    save_frames(all_frames, output_dir, input_core, fps=30)
+
+    # a new_fps is being used
+    if new_fps > 0:
+        # compute the new output_frames->display the frames->save the frames
+        output_frames = change_fps(all_frames, 30, new_fps)
+        display_frames(output_frames, "Output Video", fps=30)
+        save_frames(output_frames, output_dir, input_core, fps=new_fps)
     
+    # save all_frames into output_dir/input_core
+    save_frames(all_frames, output_dir, input_core, fps=30)
 
 if __name__ == "__main__":
     main()
