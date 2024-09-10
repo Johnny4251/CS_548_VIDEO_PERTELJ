@@ -1,8 +1,8 @@
 import sys
 import os
-import shutil
-import numpy as np
 import cv2
+import shutil
+from pathlib import Path
 
 def load_video_as_frames(video_filepath):
 
@@ -114,16 +114,31 @@ def save_frames(all_frames, output_dir, basename, fps=30):
 
 
 def main():
-    """
     
-    Main loop, contents are not intended for prod.. yet. 
-    Just for testing functions.
+    # get argument count-> verify that the correct arguments have been passed
+    argc = len(sys.argv)
+    if argc < 3:
+        print("Usage: <input_video_path> <output_directory>")
+        exit(1)
+
+    # get the input_video_path's core
+    input_video_path = sys.argv[1]
+    input_core = Path(input_video_path).stem
+
+    # output_dir is 2nd arg
+    output_dir = sys.argv[2]
+
+    # load_video returns a list of each frame
+    all_frames = load_video_as_frames(input_video_path)
+
+    # ensure load_video_as_frames exectured correctly, if not exit(1)
+    if all_frames is None: 
+        print("Error: Could not load video frames.") 
+        exit(1)
     
-    """
-    
-    frames = load_video_as_frames("assign01/input/noice.mp4")
-    #display_frames(frames, "Title", fps=20)
-    save_framess(frames, "noice", "testing")
+    # display frames, save_frames
+    display_frames(all_frames, "Input Video", fps=30)
+    save_frames(all_frames, output_dir, input_core, fps=30)
     
 
 if __name__ == "__main__":
