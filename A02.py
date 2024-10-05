@@ -1,26 +1,162 @@
+# Author:       John Pertell
+# Course:       CS548 - Video Processing/Vision
+# Date:         09.09.24
+
 import A01
 import numpy as np
 import cv2
 from enum import Enum 
 
-class OPTICAL_FLOW: 
+class OPTICAL_FLOW(Enum): 
     HORN_SHUNCK = "horn_shunck" 
     LUCAS_KANADE = "lucas_kanade"
 
 def compute_video_derivatives(video_frames, size):
-    pass
+
+    """
+    This function gets and returns the derivatives of the given
+    video. 
+    """
+
+    if size == 2:
+        # Size is 2 = 2x2 filters
+        kfx = np.array([[-1, 1], [-1, 1]])
+        kfy = np.array([[-1, -1], [1, 1]])
+        kft1 = np.array([[-1, -1], [-1, -1]])
+        kft2 = np.array([[1, 1], [1, 1]])
+    elif size == 3:
+        # Size is 3 = 3x3 filters
+        kfx = np.array([[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]])
+        kfy = np.array([[-1, -2, -1], [0, 0, 0], [1, 2, 1]])
+        kft1 = np.array([[-1, -2, -1], [-2, -4, -2], [-1, -2, -1]])
+        kft2 = np.array([[1, 2, 1], [2, 4, 2], [1, 2, 1]])
+    else:
+        return None
+
+    previous_frame = None
+    all_fx = []
+    all_fy = []
+    all_ft = []
+
+    for frame in video_frames:
+        # Convert the image to a grayscale, float64 image with range [0,1] 
+        gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        gray_frame = gray_frame.astype(np.float64)
+        gray_frame /= 255.0
+
+        # If the previous frame is not set, set it to the current frame
+        if previous_frame is None:
+            previous_frame = gray_frame
+
+        # Apply the filters to get the fx, fy and ft values across both frames
+        fx = cv2.filter2D(previous_frame, -1, kfx) + cv2.filter2D(gray_frame, -1, kfx)
+        fy = cv2.filter2D(previous_frame, -1, kfy) + cv2.filter2D(gray_frame, -1, kfy)
+        ft = cv2.filter2D(previous_frame, -1, kft1) + cv2.filter2D(gray_frame, -1, kft2)
+
+        # Scale the results accordingly
+        if size == 2:
+            fx /= 4.0
+            fy /= 4.0
+            ft /= 4.0
+        else:
+            fx /= 8.0
+            fy /= 8.0
+            ft /= 16.0
+
+        # keep running count of all fx,fy & ft
+        all_fx.append(fx)
+        all_fy.append(fy)
+        all_ft.append(ft)
+
+        # Set previous frame to current frame
+        previous_frame = gray_frame
+
+    # Return three lists: all_fx, all_fy, all_ft
+    return all_fx, all_fy, all_ft
 
 def compute_one_optical_flow_horn_shunck(fx, fy, ft, max_iter, max_error, weight=1.0):
+    """
+    Compute one optical flow using the Horn-Shuck method.
+
+    Most of the code is taken from 'ProfExercises02.py'. Modified
+    to fit requirements of assign02.
+    """
+
+    u = np.zeros(fx.shape, dtype="float64")
+    v = np.zeros(fx.shape, dtype="float64")
+
+    lap_filter = np.array([[0, 0.25, 0],
+                           [0.25, 0, 0.25],
+                           [0, 0.25, 0]], dtype="float64")
+    
+    iter_cnt = 0
+    converged = False
+    
+    while not converged:
+        uav = cv2.filter2D(u, cv2.CV_64F, lap_filter)
+        vav = cv2.filter2D(v, cv2.CV_64F, lap_filter)
+
+        P = fx*uav + fy*vav + ft
+        D = weight + fx*fx + fy*fy
+
+        PD = P/D
+
+        u = uav - fx*PD
+        v = vav - fy*PD
+
+        # Get the AVERAGE of the error
+        error = np.mean(np.abs(PD))
+        
+        iter_cnt += 1
+        
+        if error <= max_error or iter_cnt >= max_iter:
+            converged = True
+
+    extra = np.zeros_like(u)
+    combo = np.stack([u, v, extra], axis=-1)
+
+    return combo, error, iter_cnt
+
+
+def compute_one_optical_flow_lucas_kanade(fx, fy, ft, win_size):#
     pass
+
 
 def compute_optical_flow(video_frames, method=OPTICAL_FLOW.HORN_SHUNCK, max_iter=10, max_error=1e-4, horn_weight=1.0, kanade_win_size=19):
-    pass
+    """
+    Compute Optical Flow, given a method from OPTICAL_FLOW enum. 
+    """
+    
+    flow_frames = []
 
+    if method == OPTICAL_FLOW.HORN_SHUNCK:
+        window_size = 2
+    elif method == OPTICAL_FLOW.LUCAS_KANADE:
+        window_size = 3
+    else:
+        return None
+
+    fx, fy, ft = compute_video_derivatives(video_frames, window_size)
+
+    # Iterate through each frame in video_frames
+    for i in range(len(video_frames)):
+        if method == OPTICAL_FLOW.HORN_SHUNCK:
+            optical_flow, error, iter_cnt = compute_one_optical_flow_horn_shunck(
+                                            fx[i], fy[i], ft[i], 
+                                            max_iter, max_error, horn_weight )
+        elif method == OPTICAL_FLOW.LUCAS_KANADE:
+            optical_flow = compute_one_optical_flow_lucas_kanade(
+                                                                video_frames[i], 
+                                                                video_frames[i+1], 
+                                                                kanade_win_size )
+        flow_frames.append(optical_flow)
+
+    return flow_frames
 
 def main():     
 
     """
-    Code from 'CS_490_548_Assign02.pdf'
+    Main function example is from 'CS_490_548_Assign02.pdf'.
     """
 
     # Load video frames 
@@ -33,12 +169,9 @@ def main():
         print("ERROR: Could not open or find the video!") 
         exit(1) 
          
-    # OPTIONAL: Only grab the first five frames 
-    video_frames = video_frames[0:5] 
-         
     # Calculate optical flow 
     flow_frames = compute_optical_flow(video_frames, method=OPTICAL_FLOW.HORN_SHUNCK) 
- 
+    
     # While not closed... 
     key = -1 
     ESC_KEY = 27 
