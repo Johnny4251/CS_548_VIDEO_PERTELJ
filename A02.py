@@ -122,9 +122,51 @@ def compute_one_optical_flow_horn_shunck(fx, fy, ft, max_iter, max_error, weight
     return combo, error, iter_cnt
 
 
-def compute_one_optical_flow_lucas_kanade(fx, fy, ft, win_size):#
-    pass
+def compute_one_optical_flow_lucas_kanade(fx, fy, ft, win_size):
+    """
 
+    Compute the optical flow using the Lucas-Kanade method for each block.
+
+    """
+    height, width = fx.shape
+    u = np.zeros((height, width), dtype="float64")
+    v = np.zeros((height, width), dtype="float64")
+    
+    for y in range(0, height, win_size):
+        for x in range(0, width, win_size):
+            # Get block fx,fy,ft
+            block_fx = fx[y:y+win_size, x:x+win_size]
+            block_fy = fy[y:y+win_size, x:x+win_size]
+            block_ft = ft[y:y+win_size, x:x+win_size]
+
+            # Compute useful terms
+            sum_fx_fy = np.sum(block_fx * block_fy)
+            sum_fx_ft = np.sum(block_fx * block_ft) 
+            sum_fy_ft = np.sum(block_fy * block_ft)
+            sum_fx2 = np.sum(block_fx**2)
+            sum_fy2 = np.sum(block_fy**2)
+
+            # Compute u & v fraction numerators & denominators using 'useful terms'
+            u_numerator = (sum_fy2 * sum_fx_ft) - (sum_fx_fy * sum_fy_ft)
+            v_numerator = (sum_fx2 * sum_fy_ft) - (sum_fx_fy * sum_fx_ft)
+            denominator = (sum_fx2 * sum_fy2) - (sum_fx_fy**2)
+
+            # If the denominator is less than 1e-6, leave the u and v values at zero.
+            if denominator < 1e-6:
+                u[y:y+win_size, x:x+win_size] = 0
+                v[y:y+win_size, x:x+win_size] = 0
+                continue
+
+            u_val = u_numerator / denominator
+            v_val = v_numerator / denominator
+            
+            u[y:y+win_size, x:x+win_size] = u_val
+            v[y:y+win_size, x:x+win_size] = v_val
+
+    extra = np.zeros_like(u)
+    optical_flow = np.stack([u, v, extra], axis=-1)
+
+    return optical_flow
 
 def compute_optical_flow(video_frames, method=OPTICAL_FLOW.HORN_SHUNCK, max_iter=10, max_error=1e-4, horn_weight=1.0, kanade_win_size=19):
     """
@@ -152,9 +194,10 @@ def compute_optical_flow(video_frames, method=OPTICAL_FLOW.HORN_SHUNCK, max_iter
                                             max_iter, max_error, horn_weight )
         elif method == OPTICAL_FLOW.LUCAS_KANADE:
             optical_flow = compute_one_optical_flow_lucas_kanade(
-                                                                video_frames[i], 
-                                                                video_frames[i+1], 
-                                                                kanade_win_size )
+                                                                fx[i], 
+                                                                fy[i],
+                                                                ft[i], 
+                                                                win_size=kanade_win_size)
         flow_frames.append(optical_flow)
 
     return flow_frames
@@ -162,7 +205,9 @@ def compute_optical_flow(video_frames, method=OPTICAL_FLOW.HORN_SHUNCK, max_iter
 def main():     
 
     """
+    
     Main function example is from 'CS_490_548_Assign02.pdf'.
+
     """
 
     # Load video frames 
@@ -176,7 +221,7 @@ def main():
         exit(1) 
          
     # Calculate optical flow 
-    flow_frames = compute_optical_flow(video_frames, method=OPTICAL_FLOW.HORN_SHUNCK) 
+    flow_frames = compute_optical_flow(video_frames, method=OPTICAL_FLOW.LUCAS_KANADE) 
     
     # While not closed... 
     key = -1 
