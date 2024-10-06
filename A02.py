@@ -1,6 +1,6 @@
 # Author:       John Pertell
 # Course:       CS548 - Video Processing/Vision
-# Date:         09.09.24
+# Date:         10.06.24
 
 import A01
 import numpy as np
@@ -205,7 +205,7 @@ def compute_optical_flow(video_frames, method=OPTICAL_FLOW.HORN_SHUNCK, max_iter
 def main():     
 
     """
-    
+
     Main function example is from 'CS_490_548_Assign02.pdf'.
 
     """
