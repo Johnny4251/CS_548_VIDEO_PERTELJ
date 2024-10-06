@@ -14,8 +14,10 @@ class OPTICAL_FLOW(Enum):
 def compute_video_derivatives(video_frames, size):
 
     """
+
     This function gets and returns the derivatives of the given
     video. 
+
     """
 
     if size == 2:
@@ -76,10 +78,12 @@ def compute_video_derivatives(video_frames, size):
 
 def compute_one_optical_flow_horn_shunck(fx, fy, ft, max_iter, max_error, weight=1.0):
     """
+
     Compute one optical flow using the Horn-Shuck method.
 
     Most of the code is taken from 'ProfExercises02.py'. Modified
     to fit requirements of assign02.
+
     """
 
     u = np.zeros(fx.shape, dtype="float64")
@@ -124,7 +128,9 @@ def compute_one_optical_flow_lucas_kanade(fx, fy, ft, win_size):#
 
 def compute_optical_flow(video_frames, method=OPTICAL_FLOW.HORN_SHUNCK, max_iter=10, max_error=1e-4, horn_weight=1.0, kanade_win_size=19):
     """
+    
     Compute Optical Flow, given a method from OPTICAL_FLOW enum. 
+
     """
     
     flow_frames = []
