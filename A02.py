@@ -41,6 +41,7 @@ def compute_video_derivatives(video_frames, size):
     all_ft = []
 
     for frame in video_frames:
+        
         # Convert the image to a grayscale, float64 image with range [0,1] 
         gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         gray_frame = gray_frame.astype(np.float64)
