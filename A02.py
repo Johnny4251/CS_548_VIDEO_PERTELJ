@@ -21,19 +21,16 @@ def compute_video_derivatives(video_frames, size):
     """
 
     if size == 2:
-        # Size is 2 = 2x2 filters
         kfx = np.array([[-1, 1], [-1, 1]])
         kfy = np.array([[-1, -1], [1, 1]])
         kft1 = np.array([[-1, -1], [-1, -1]])
         kft2 = np.array([[1, 1], [1, 1]])
     elif size == 3:
-        # Size is 3 = 3x3 filters
         kfx = np.array([[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]])
         kfy = np.array([[-1, -2, -1], [0, 0, 0], [1, 2, 1]])
         kft1 = np.array([[-1, -2, -1], [-2, -4, -2], [-1, -2, -1]])
         kft2 = np.array([[1, 2, 1], [2, 4, 2], [1, 2, 1]])
-    else:
-        return None
+    else: return None
 
     previous_frame = None
     all_fx = []
@@ -66,7 +63,7 @@ def compute_video_derivatives(video_frames, size):
             fy /= 8.0
             ft /= 16.0
 
-        # keep running count of all fx,fy & ft
+        # Keep a running count of all fx,fy & ft
         all_fx.append(fx)
         all_fy.append(fy)
         all_ft.append(ft)
@@ -127,6 +124,7 @@ def compute_one_optical_flow_lucas_kanade(fx, fy, ft, win_size):
     """
 
     Compute the optical flow using the Lucas-Kanade method for each block.
+    Technique is from slide 102 of 'CS_490_548_02_OpticalFlow'.
 
     """
     height, width = fx.shape
@@ -152,7 +150,7 @@ def compute_one_optical_flow_lucas_kanade(fx, fy, ft, win_size):
             v_numerator = (sum_fx2 * sum_fy_ft) - (sum_fx_fy * sum_fx_ft)
             denominator = (sum_fx2 * sum_fy2) - (sum_fx_fy**2)
 
-            # If the denominator is less than 1e-6, leave the u and v values at zero.
+            # If the denominator is less than 1e-6, leave the u and v values at zero. 
             if denominator < 1e-6:
                 u[y:y+win_size, x:x+win_size] = 0
                 v[y:y+win_size, x:x+win_size] = 0
@@ -182,8 +180,7 @@ def compute_optical_flow(video_frames, method=OPTICAL_FLOW.HORN_SHUNCK, max_iter
         window_size = 2
     elif method == OPTICAL_FLOW.LUCAS_KANADE:
         window_size = 3
-    else:
-        return None
+    else: return None
 
     fx, fy, ft = compute_video_derivatives(video_frames, window_size)
 
