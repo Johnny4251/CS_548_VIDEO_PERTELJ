@@ -94,6 +94,9 @@ def compute_one_optical_flow_horn_shunck(fx, fy, ft, max_iter, max_error, weight
     iter_cnt = 0
     converged = False
     
+    kfx = np.array([-1,1], dtype=np.float64)
+    kfy = np.array([-1,1], dtype=np.float64)
+
     while not converged:
         uav = cv2.filter2D(u, cv2.CV_64F, lap_filter)
         vav = cv2.filter2D(v, cv2.CV_64F, lap_filter)
@@ -106,8 +109,15 @@ def compute_one_optical_flow_horn_shunck(fx, fy, ft, max_iter, max_error, weight
         u = uav - fx*PD
         v = vav - fy*PD
 
-        # Get the AVERAGE of the error
-        error = np.mean(np.abs(PD))
+        berror = (fx*u + fy*v + ft)**2
+
+        ux = cv2.filter2D(u, -1, kfx)
+        uy = cv2.filter2D(u, -1, kfy)
+        vx = cv2.filter2D(v, -1, kfx)
+        vy = cv2.filter2D(v, -1, kfy)
+
+        serror = weight * (ux**2 + uy**2 + vx**2 + vy**2)
+        error = np.mean(berror + serror)
         
         iter_cnt += 1
         
