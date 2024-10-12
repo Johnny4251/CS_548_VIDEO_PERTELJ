@@ -6,3 +6,6 @@ __pycache__/
 Pipfile.lock
 data/
 logs/
+assign01/output/
+assign02/ground/
+assign02/ground.zip
