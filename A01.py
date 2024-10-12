@@ -144,7 +144,7 @@ def change_fps(input_frames, old_fps, new_fps):
 def main():
     
     # new_fps < 0 => not being used
-    new_fps = -1
+    new_fps = 30
 
     # get argument count-> verify that the correct arguments have been passed
     argc = len(sys.argv)
@@ -172,15 +172,13 @@ def main():
     
     # display frames
     display_frames(all_frames, "Input Video", fps=30)
-
-    # a new_fps is being used
-    if new_fps > 0:
-        # compute the new output_frames->display the frames->save the frames
-        output_frames = change_fps(all_frames, 30, new_fps)
-        display_frames(output_frames, "Output Video", fps=30)
-        save_frames(output_frames, output_dir, input_core, fps=new_fps)
+    
+    # compute the new output_frames->display the frames->save the frames
+    output_frames = change_fps(all_frames, 30, new_fps)
+    display_frames(output_frames, "Output Video", fps=30)
+    save_frames(output_frames, output_dir, input_core, fps=new_fps)
     
     # save all_frames into output_dir/input_core
-    save_frames(all_frames, output_dir, input_core, fps=30)
+    #save_frames(all_frames, output_dir, input_core, fps=30)
 
 if __name__ == "__main__": main()
