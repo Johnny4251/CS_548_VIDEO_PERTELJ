@@ -94,8 +94,8 @@ def compute_one_optical_flow_horn_shunck(fx, fy, ft, max_iter, max_error, weight
     iter_cnt = 0
     converged = False
     
-    kfx = np.array([-1,1], dtype=np.float64)
-    kfy = np.array([-1,1], dtype=np.float64)
+    kfx = np.array([[-1,1]], dtype=np.float64)
+    kfy = np.array([[-1],[1]], dtype=np.float64)
 
     while not converged:
         uav = cv2.filter2D(u, cv2.CV_64F, lap_filter)
