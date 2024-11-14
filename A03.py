@@ -1,3 +1,7 @@
+# Author:       John Pertell
+# Course:       CS548 - Video Processing/Vision
+# Date:         11.13.24
+
 import cv2
 import numpy as np
 
