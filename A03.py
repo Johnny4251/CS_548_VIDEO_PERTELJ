@@ -50,12 +50,14 @@ def track_doggo(video_frames, first_box, break_count=4, pref_section=2, ymin_sca
         ymin, xmin, ymax, xmax = hist_boxes[-1]
         width = xmax - xmin
         height = ymax - ymin
-
+        
+        # do histogram back projection => camshift
         back_proj = cv2.calcBackProject([frame_hsv], [0, 1], roi_hist, [0, 180, 0, 256], 1)
         cv2.normalize(back_proj, back_proj, 0, 255, cv2.NORM_MINMAX)
         _, window = cv2.CamShift(back_proj, (xmin, ymin, width, height), (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 1))
         x, y, w, h = window
 
+        # compute weighted average
         weight_prev = 0.5
         weight_new = 0.5
         avg_ymin = int(weight_prev * hist_boxes[-1][0] + weight_new * y)
