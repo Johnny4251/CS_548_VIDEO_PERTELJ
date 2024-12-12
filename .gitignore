@@ -11,3 +11,4 @@ assign02/ground/
 assign02/ground.zip
 assign03/output/
 assign04/output/bigmodel.pth
+*.pth
