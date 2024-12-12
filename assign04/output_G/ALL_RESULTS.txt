@@ -11,9 +11,9 @@ APPROACHES:
 ****************************************
 RESULTS:
 ****************************************
-APPROACH	TRAINING_accuracy	TRAINING_f1	TESTING_accuracy	TESTING_f1
-DeepNet	0.5677	0.4082	0.4516	0.2992
-AllKnowingNet	0.7031	0.5050	0.6774	0.4654
+APPROACH	    TRAINING_accuracy	TRAINING_f1	TESTING_accuracy	TESTING_f1
+DeepNet	      0.5677	          0.4082	    0.4516	           0.2992
+AllKnowingNet	0.7031	          0.5050	    0.6774	            0.4654
 
 ****************************************
 MODEL ARCHITECTURES:
