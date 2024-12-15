@@ -3,7 +3,7 @@ APPROACHES:
 ****************************************
 
 * DeepNet
-	 A deep spatiotemporal convolutional network with multiple 3D conv layers and abundant max pooling to save on GPU memory.
+	 A deep spatiotemporal convolutional network. This model performs well, but can overtrain very fast.
 
 * AllKnowingNet
 	 This is a basic model that takes in a pretrained S3D approach and finetunes its classifying layer.
@@ -11,9 +11,9 @@ APPROACHES:
 ****************************************
 RESULTS:
 ****************************************
-APPROACH	    TRAINING_accuracy	TRAINING_f1	TESTING_accuracy	TESTING_f1
-DeepNet	      0.5677	          0.4082	    0.4516	           0.2992
-AllKnowingNet	0.7031	          0.5050	    0.6774	            0.4654
+APPROACH	TRAINING_accuracy	TRAINING_f1	TESTING_accuracy	TESTING_f1
+DeepNet	0.5677	0.4082	0.4516	0.2992
+AllKnowingNet	0.7031	0.5050	0.6774	0.4654
 
 ****************************************
 MODEL ARCHITECTURES:
